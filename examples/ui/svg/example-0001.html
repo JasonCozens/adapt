@@ -1,0 +1,103 @@
+<html>
+    <head>
+        <title>SVG D+D</title>
+<style>
+.static {
+  cursor: not-allowed;
+}
+.draggable {
+  cursor: move;
+}
+</style>
+<script lang="javascript">
+    function makeDraggable(evt) {
+        var svg = evt.target;
+        svg.addEventListener('mousedown', startDrag);
+        svg.addEventListener('mousemove', drag);
+        svg.addEventListener('mouseup', endDrag);
+        svg.addEventListener('mouseleave', endDrag);
+        function startDrag(evt) {
+            if (evt.target.classList.contains('draggable')) {
+                selectedElement = evt.target;
+            }
+        }
+        function getMousePosition(evt) {
+          var CTM = svg.getScreenCTM();
+          return {
+            x: (evt.clientX - CTM.e) / CTM.a,
+            y: (evt.clientY - CTM.f) / CTM.d
+          };
+        }
+        var selectedElement, offset;
+        function startDrag(evt) {
+          if (evt.target.classList.contains('draggable')) {
+            selectedElement = evt.target;
+            offset = getMousePosition(evt);
+            offset.x -= parseFloat(selectedElement.getAttributeNS(null, "x"));
+            offset.y -= parseFloat(selectedElement.getAttributeNS(null, "y"));
+          }
+        }
+        function drag(evt) {
+          if (selectedElement) {
+            evt.preventDefault();
+            var coord = getMousePosition(evt);
+            selectedElement.setAttributeNS(null, "x", coord.x - offset.x);
+            selectedElement.setAttributeNS(null, "y", coord.y - offset.y);
+          }
+        }
+        function endDrag(evt) {
+            selectedElement = null;
+        }
+      }
+</script>
+</head>
+    <body>
+        <div id="app">
+            <svg viewBox="5 5 50 50" xmlns="http://www.w3.org/2000/svg">
+              <!--
+              with relative unit such as percentage, the visual size
+              of the square looks unchanged regardless of the viewBox
+              -->
+              <rect x="0" y="0" width="100%" height="100%"/>
+            
+              <!--
+              with a large viewBox the circle looks small
+              as it is using user units for the r attribute:
+              4 resolved against 100 as set in the viewBox
+              -->
+              <circle cx="50%" cy="50%" r="10%" fill="white"/>
+            </svg>
+            
+            <svg viewBox="0 0 10 10" xmlns="http://www.w3.org/2000/svg">
+              <!--
+              with relative unit such as percentage, the visual size
+              of the square looks unchanged regardless of the viewBox`
+              -->
+              <rect x="0" y="0" width="100%" height="100%"/>
+            
+              <!--
+              with a small viewBox the circle looks large
+              as it is using user units for the r attribute:
+              4 resolved against 10 as set in the viewBox
+              -->
+              <circle cx="50%" cy="50%" r="4" fill="white"/>
+            </svg>
+            
+            <svg viewBox="-5 -5 10 10" xmlns="http://www.w3.org/2000/svg">
+              <!--
+              The point of coordinate 0,0 is now in the center of the viewport,
+              and 100% is still resolve to a width or height of 10 user units so
+              the rectangle looks shifted to the bottom/right corner of the viewport
+              -->
+              <rect x="0" y="0" width="100%" height="100%"/>
+            
+              <!--
+              With the point of coordinate 0,0 in the center of the viewport the
+              value 50% is resolve to 5 which means the center of the circle is
+              in the bottom/right corner of the viewport.
+              -->
+              <circle cx="50%" cy="50%" r="4" fill="white"/>
+            </svg>
+          </div>
+    </body>
+</html>
