@@ -1,0 +1,83 @@
+<html>
+
+<head>
+  <script lang="javascript">
+    function makeClickable(evt) {
+      var svg = evt.target;
+      svg.addEventListener('mousedown', startClick);
+      svg.addEventListener('mouseup', bringToTop);
+      var x1;
+      var y1;
+      function startClick(evt) {
+        x1 = evt.target.x.baseVal.valueAsString;
+        y1 = evt.target.y.baseVal.valueAsString;
+      }
+      function bringToTop(evt) {
+        if (evt.target.classList.contains('clickable')) {
+          var mouseUp = evt.target;
+          if (x1 === mouseUp.x.baseVal.valueAsString & y1 === mouseUp.y.baseVal.valueAsString) {
+            mouseUp.remove();
+            document.getElementById("svg").appendChild(mouseUp);
+          }
+        }
+        x1 = null;
+        y1 = null;
+      }
+    }
+    function makeDraggable(evt) {
+        var svg = evt.target;
+        svg.addEventListener('mousedown', startDrag);
+        svg.addEventListener('mousemove', drag);
+        svg.addEventListener('mouseup', endDrag);
+        svg.addEventListener('mouseleave', endDrag);
+        function startDrag(evt) {
+            if (evt.target.classList.contains('draggable')) {
+                selectedElement = evt.target;
+            }
+        }
+        function getMousePosition(evt) {
+          var CTM = svg.getScreenCTM();
+          return {
+            x: (evt.clientX - CTM.e) / CTM.a,
+            y: (evt.clientY - CTM.f) / CTM.d
+          };
+        }
+        var selectedElement, offset;
+        function startDrag(evt) {
+          if (evt.target.classList.contains('draggable')) {
+            selectedElement = evt.target;
+            offset = getMousePosition(evt);
+            offset.x -= parseFloat(selectedElement.getAttributeNS(null, "x"));
+            offset.y -= parseFloat(selectedElement.getAttributeNS(null, "y"));
+          }
+        }
+        function drag(evt) {
+          if (selectedElement) {
+            evt.preventDefault();
+            var coord = getMousePosition(evt);
+            selectedElement.setAttributeNS(null, "x", coord.x - offset.x);
+            selectedElement.setAttributeNS(null, "y", coord.y - offset.y);
+          }
+        }
+        function endDrag(evt) {
+            selectedElement = null;
+        }
+      }
+</script>
+
+
+
+</head>
+
+<body>
+  <div>
+    <svg id="svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 60" onload="makeDraggable(evt);makeClickable(evt)">
+      <rect x="0" y="0" width="30" height="30" />
+      <rect class="draggable clickable" x=" 5" y="5" width="10" height="10" fill="#00ff00" />
+      <rect class="draggable clickable" x="10" y="10" width="10" height="10" fill="#0000ff" />
+      <rect class="draggable clickable" x="15" y="15" width="10" height="10" fill="#ffffff" />
+    </svg>
+  </div>
+</body>
+
+</html>
