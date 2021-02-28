@@ -35,20 +35,37 @@ namespace Adapt.NullReferenceTests
             var assembly = System.Reflection.Assembly.GetExecutingAssembly();
             foreach (var type in assembly.GetTypes())
             {
-                // ConstructorInfo c;
-                foreach (var c in type.GetConstructors())
+                var @namespace = type.Namespace;
+                if (@namespace != null && @namespace.StartsWith("Adapt.NullReferenceTests.ConstructorStubs"))
                 {
-                    // c = con;
-                    if (c.GetParameters().Length == 1)
+                    foreach (var action in ArgumentNullConstructorTests(type))
                     {
-                        yield return new object[] {
-                            new Action(() => {
-                                output.WriteLine($"Inside Test: {type.FullName}.{c.Name} - {c.GetParameters().Length}");
-                                c.Invoke(new object[] {null}); })
-                            };
-                    }
+                        yield return new object[] { action };
+                    };
                 }
             }
+        }
+
+        private static Action[] ArgumentNullConstructorTests(Type type)
+        {
+            var actions = new List<Action> { };
+            foreach (var constructorInfo in type.GetConstructors())
+            {
+                if (constructorInfo.GetParameters().Length == 1)
+                {
+                    actions.Add(NullArgumentTest(type, constructorInfo));
+                }
+            }
+            return actions.ToArray();
+        }
+
+        private static Action NullArgumentTest(Type type, ConstructorInfo constructorInfo)
+        {
+            return new Action(() =>
+                            {
+                                output.WriteLine($"Inside Test: {type.FullName}.{constructorInfo.Name} - {constructorInfo.GetParameters().Length}");
+                                constructorInfo.Invoke(new object[] { null });
+                            });
         }
     }
 }
