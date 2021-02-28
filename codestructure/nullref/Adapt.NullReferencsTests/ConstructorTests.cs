@@ -9,7 +9,7 @@ namespace Adapt.NullReferenceTests
 
         public ConstructorTests(ITestOutputHelper output)
         {
-            this.output = output;
+            this.output = output; 
         }
 
         [Fact]
