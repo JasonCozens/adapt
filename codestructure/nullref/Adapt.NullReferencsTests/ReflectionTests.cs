@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
@@ -79,7 +80,7 @@ namespace Adapt.NullReferencsTests
         }
 
         [Fact]
-        public void InvokeOneParameterConstructor()
+        public void InvokeOneParameterConstructorWithStaticMock()
         {
             var assembly = Assembly.GetExecutingAssembly();
             var reflectionClassType = assembly.GetType("Adapt.NullReferencsTests.ReflectionClass");
@@ -89,6 +90,20 @@ namespace Adapt.NullReferencsTests
             var reflectionClass = constructor.Invoke(new object[] { iReflectMock.Object });
 
             Assert.Equal(typeof(ReflectionClass), reflectionClass.GetType());
+        }
+
+        [Fact]
+        public void InvokeOneParameterConstructorWithDynamicMock()
+        {
+            var assembly = Assembly.GetExecutingAssembly();
+            var reflectionClassType = assembly.GetType("Adapt.NullReferencsTests.ReflectionClass");
+            var constructorInfo = reflectionClassType.GetConstructors().First(c => c.GetParameters().Length == 1);
+            Type parameterType = constructorInfo.GetParameters()[0].ParameterType;
+            var o = InterfaceFactory.InterfaceObjectFactory.New(parameterType);
+
+            var sut = constructorInfo.Invoke(new object[] { o });
+
+            Assert.Equal(typeof(ReflectionClass), sut.GetType());
         }
     }
 }
