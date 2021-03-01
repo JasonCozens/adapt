@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Moq;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -15,6 +16,8 @@ namespace Adapt.NullReferencsTests
 
     public class ReflectionClass
     {
+        private readonly IReflect _reflect;
+
         public ReflectionClass()
         {
 
@@ -22,7 +25,7 @@ namespace Adapt.NullReferencsTests
 
         public ReflectionClass(IReflect reflect)
         {
-
+            _reflect = reflect ?? throw new ArgumentNullException(nameof(reflect));
         }
     }
 
@@ -71,6 +74,19 @@ namespace Adapt.NullReferencsTests
             var constructor = reflectionClassType.GetConstructors().First(c => c.GetParameters().Length == 0);
 
             var reflectionClass = constructor.Invoke(null);
+
+            Assert.Equal(typeof(ReflectionClass), reflectionClass.GetType());
+        }
+
+        [Fact]
+        public void InvokeOneParameterConstructor()
+        {
+            var assembly = Assembly.GetExecutingAssembly();
+            var reflectionClassType = assembly.GetType("Adapt.NullReferencsTests.ReflectionClass");
+            var constructor = reflectionClassType.GetConstructors().First(c => c.GetParameters().Length == 1);
+            var iReflectMock = new Mock<IReflect>();
+
+            var reflectionClass = constructor.Invoke(new object[] { iReflectMock.Object });
 
             Assert.Equal(typeof(ReflectionClass), reflectionClass.GetType());
         }
