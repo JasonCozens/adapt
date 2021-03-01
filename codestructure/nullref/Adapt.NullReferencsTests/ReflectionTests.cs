@@ -24,9 +24,21 @@ namespace Adapt.NullReferencsTests
         public void GetReflectionClassTest()
         {
             var assembly = Assembly.GetExecutingAssembly();
+
             var reflectionClass = assembly.GetType("Adapt.NullReferencsTests.ReflectionClass");
 
             Assert.NotNull(reflectionClass);
+        }
+
+        [Fact]
+        public void GetReflectionClassConstructorsTest()
+        {
+            var assembly = Assembly.GetExecutingAssembly();
+            var reflectionClass = assembly.GetType("Adapt.NullReferencsTests.ReflectionClass");
+
+            var constructors = reflectionClass.GetConstructors();
+
+            Assert.Equal(1, constructors.Count(c => c.GetParameters().Length == 0));
         }
     }
 }
