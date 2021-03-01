@@ -15,7 +15,15 @@ namespace Adapt.NullReferencsTests
 
     public class ReflectionClass
     {
+        public ReflectionClass()
+        {
 
+        }
+
+        public ReflectionClass(IReflect reflect)
+        {
+
+        }
     }
 
     public class ReflectionTests
@@ -38,7 +46,9 @@ namespace Adapt.NullReferencsTests
 
             var constructors = reflectionClass.GetConstructors();
 
+            Assert.Equal(2, constructors.Count());
             Assert.Equal(1, constructors.Count(c => c.GetParameters().Length == 0));
+            Assert.Equal(1, constructors.Count(c => c.GetParameters().Length == 1));
         }
     }
 }
