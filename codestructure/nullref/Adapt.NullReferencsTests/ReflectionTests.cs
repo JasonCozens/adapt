@@ -62,5 +62,17 @@ namespace Adapt.NullReferencsTests
 
             Assert.Equal(typeof(IReflect), parameter.ParameterType);
         }
+
+        [Fact]
+        public void InvokeDefaultConstructor()
+        {
+            var assembly = Assembly.GetExecutingAssembly();
+            var reflectionClassType = assembly.GetType("Adapt.NullReferencsTests.ReflectionClass");
+            var constructor = reflectionClassType.GetConstructors().First(c => c.GetParameters().Length == 0);
+
+            var reflectionClass = constructor.Invoke(null);
+
+            Assert.Equal(typeof(ReflectionClass), reflectionClass.GetType());
+        }
     }
 }
