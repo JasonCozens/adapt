@@ -5,6 +5,11 @@ VisualStudioVersion = 16.0.31019.35
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Adapt.NullReferencsTests", "Adapt.NullReferencsTests\Adapt.NullReferencsTests.csproj", "{13FBA774-5325-42BA-88A6-7F0D9F6C8A66}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{C66EDFF6-9506-4C95-9B4E-8E843CD5AB2C}"
+	ProjectSection(SolutionItems) = preProject
+		readme.md = readme.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

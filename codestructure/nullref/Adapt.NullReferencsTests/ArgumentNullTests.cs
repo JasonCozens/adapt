@@ -55,17 +55,34 @@ namespace Adapt.NullReferenceTests
                 {
                     actions.Add(NullArgumentTest(type, constructorInfo));
                 }
+                if (constructorInfo.GetParameters().Length == 2)
+                {
+                    actions.AddRange(TwoParameterConstructorTest(type, constructorInfo));
+                }
             }
             return actions.ToArray();
+        }
+
+        private static IEnumerable<Action> TwoParameterConstructorTest(Type type, ConstructorInfo constructorInfo)
+        {
+            var actions = new List<Action>();
+            var action = new Action(() =>
+            {
+                output.WriteLine($"Inside Test: {type.FullName}.{constructorInfo.Name} - {constructorInfo.GetParameters().Length}");
+                var p1 = constructorInfo.GetParameters()[0];
+                constructorInfo.Invoke(new object[] { null, null });
+            });
+            actions.Add(action);
+            return actions;
         }
 
         private static Action NullArgumentTest(Type type, ConstructorInfo constructorInfo)
         {
             return new Action(() =>
-                            {
-                                output.WriteLine($"Inside Test: {type.FullName}.{constructorInfo.Name} - {constructorInfo.GetParameters().Length}");
-                                constructorInfo.Invoke(new object[] { null });
-                            });
+            {
+                output.WriteLine($"Inside Test: {type.FullName}.{constructorInfo.Name} - {constructorInfo.GetParameters().Length}");
+                constructorInfo.Invoke(new object[] { null });
+            });
         }
     }
 }
